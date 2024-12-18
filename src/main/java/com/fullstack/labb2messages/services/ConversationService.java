@@ -23,7 +23,7 @@ public class ConversationService {
     }
     public List<ConversationDTO> getAllConversationsByUserId(int userId) {
         List<Conversation> conversations=new ArrayList<>();
-        conversations=conversationRepository.findAllByuser1_userId(userId);
+        conversations.addAll(conversationRepository.findAllByuser1_userId(userId));
         conversations.addAll(conversationRepository.findAllByuser2_userId(userId));
         List<ConversationDTO> conversationDTOS=new ArrayList<>();
         for (Conversation conversation : conversations) {
