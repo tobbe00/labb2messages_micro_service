@@ -1,11 +1,17 @@
-# Använd en lättvikts JDK-bild för att köra applikationen
-FROM openjdk:17-jdk-slim
+FROM maven:3.8.7-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml ./
+RUN mvn dependency:go-offline
+COPY src ./src
 
-# Exponera port 8080 som applikationen lyssnar på
+RUN mvn clean package
+
+
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Kopiera den färdiga jar-filen från din lokala target-mapp till containern
-COPY target/labb2messages-0.0.1-SNAPSHOT.jar app.jar
-
-# Starta applikationen
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/quarkus-run.jar"]
