@@ -6,6 +6,7 @@ import com.fullstack.labb2messages.services.ConversationService;
 import com.fullstack.labb2messages.services.MessageService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,11 +25,12 @@ public class MessageController {
     }
 
     // Endpoint to get all received messages for a user
+    @PreAuthorize("hasAnyRole('worker', 'doctor', 'patient')")
     @GetMapping("/received/{userId}")
     public List<MessageDTO> getReceivedMessages(@PathVariable Long userId) {
         return messageService.getReceivedMessages(userId);
     }
-
+    @PreAuthorize("hasAnyRole('patient')")
     @PostMapping("/sendFirstMessage")
     @Transactional
     public ConversationDTO createFirstMessage(@RequestBody FirstMessageDTO firstMessageDTO) {
@@ -47,11 +49,12 @@ public class MessageController {
 
         return c;
     }
-
+    @PreAuthorize("hasAnyRole('worker', 'doctor', 'patient')")
     @GetMapping("/getConvoMessages/{conversationId}")
     public List<MessageDTO> getConvoMessages(@PathVariable Long conversationId) {
         return messageService.getMessagesFromConversation(conversationId);
     }
+    @PreAuthorize("hasAnyRole('worker', 'doctor', 'patient')")
     @PostMapping("/sendMessageInConvo")
     public MessageDTO createMessageInConvo(@RequestBody MessageDTO messageDTO) {
 

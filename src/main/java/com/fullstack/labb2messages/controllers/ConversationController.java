@@ -6,6 +6,7 @@ import com.fullstack.labb2messages.dto.UserDTO;
 import com.fullstack.labb2messages.services.ConversationService;
 import com.fullstack.labb2messages.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class ConversationController {
     }
 
     // Endpoint to get all received messages for a user
+    @PreAuthorize("hasAnyRole('worker', 'doctor', 'patient')")
     @GetMapping("/yourConversations/{userId}")
     public List<ConvoToViewDTO> getYourConversations(@PathVariable int userId) {
         List<ConversationDTO> conversationDTOS= conversationService.getAllConversationsByUserId(userId);
