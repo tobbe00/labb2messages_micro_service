@@ -52,7 +52,7 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         }
         return jwt.getClaim(claimName);
     }
-
+    /*
     private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
         Map<String, Object> resourceAccess;
         Map<String, Object> resource;
@@ -73,4 +73,19 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toSet());
     }
+
+     */
+    private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
+        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+        if (realmAccess == null || realmAccess.get("roles") == null) {
+            return Set.of();
+        }
+
+        Collection<String> roles = (Collection<String>) realmAccess.get("roles");
+
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))  // Ensure "ROLE_" prefix
+                .collect(Collectors.toSet());
+    }
+
 }
